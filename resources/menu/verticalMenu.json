@@ -63,8 +63,8 @@
     {
       "name": "Meeting",
       "icon": "menu-icon tf-icons bx bx-video-plus",
-      "slug": "create-meeting",
-      "url": "cards/basic"
+      "slug": "agent.meetings",
+      "url": "agent/meetings"
     },
     {
       "menuHeader": "Apps & Pages"

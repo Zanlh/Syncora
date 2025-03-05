@@ -44,6 +44,7 @@ use App\Http\Controllers\form_layouts\VerticalForm;
 use App\Http\Controllers\form_layouts\HorizontalForm;
 use App\Http\Controllers\tables\Basic as TablesBasic;
 use App\Http\Controllers\agent\AgentAuthController;
+use App\Http\Controllers\agent\MeetingController;
 
 
 //Agent Login and Register Route
@@ -62,6 +63,10 @@ Route::get('/', function () {
 Route::middleware('auth:agent')->name('agent.')->prefix('agent')->group(function () {
   // Main Page Route
   Route::get('/', [Analytics::class, 'index'])->name('dashboard');
+
+  //Meeting Routes
+  Route::get('/meetings', [MeetingController::class, 'index'])->name('meetings');
+  Route::get('/meetings/create', [MeetingController::class, 'create'])->name('meetings.create');
 });
 
 

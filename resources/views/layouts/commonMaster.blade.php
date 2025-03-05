@@ -26,6 +26,12 @@
 
     <!-- Include Scripts for customizer, helper, analytics, config -->
     @include('layouts/sections/scriptsIncludes')
+
+
+    {{-- SweetAlert2 CSS --}}
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.17.2/dist/sweetalert2.min.css" rel="stylesheet">
+
+    @stack('style-page')
 </head>
 
 <body>
@@ -38,6 +44,24 @@
 
     <!-- Include Scripts -->
     @include('layouts/sections/scripts')
+    <!-- Load jQuery first -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    {{-- SweetAlert2 JS --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.17.2/dist/sweetalert2.min.js"></script>
+
+    <script src="https://meet.jit.si/external_api.js"></script>
+
+
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+    </script>
+
+    @stack('script-page')
 
 </body>
 
