@@ -43,9 +43,36 @@ use App\Http\Controllers\form_elements\InputGroups;
 use App\Http\Controllers\form_layouts\VerticalForm;
 use App\Http\Controllers\form_layouts\HorizontalForm;
 use App\Http\Controllers\tables\Basic as TablesBasic;
+use App\Http\Controllers\agent\AgentAuthController;
 
-// Main Page Route
-Route::get('/', [Analytics::class, 'index'])->name('dashboard-analytics');
+
+//Agent Login and Register Route
+Route::get('/agent/login', [AgentAuthController::class, 'login'])->name('agent.login');
+Route::post('/agent/login', [AgentAuthController::class, 'loginSubmit'])->name('agent.login.submit');
+Route::get('/agent/register', [AgentAuthController::class, 'register'])->name('agent.register');
+Route::post('/agent/register', [AgentAuthController::class, 'registerSubmit'])->name('agent.register.submit');
+Route::post('/agent/logout', [AgentAuthController::class, 'logout'])->name('agent.logout');
+
+// Redirect the default / route to /agent
+Route::get('/', function () {
+  return redirect('/agent'); // Redirect to /agent
+});
+
+// Agent Routes
+Route::middleware('auth:agent')->name('agent.')->prefix('agent')->group(function () {
+  // Main Page Route
+  Route::get('/', [Analytics::class, 'index'])->name('dashboard');
+});
+
+
+
+
+
+
+
+
+
+
 
 // layout
 Route::get('/layouts/without-menu', [WithoutMenu::class, 'index'])->name('layouts-without-menu');

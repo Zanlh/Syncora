@@ -58,142 +58,16 @@
       ]
     },
     {
-      "name": "Layouts",
-      "icon": "menu-icon tf-icons bx bx-layout",
-      "slug": "layouts",
-      "submenu": [
-        {
-          "url": "layouts/without-menu",
-          "name": "Without menu",
-          "slug": "layouts-without-menu"
-        },
-        {
-          "url": "layouts/without-navbar",
-          "name": "Without navbar",
-          "slug": "layouts-without-navbar"
-        },
-        {
-          "url": "layouts/container",
-          "name": "Container",
-          "slug": "layouts-container"
-        },
-        {
-          "url": "layouts/fluid",
-          "name": "Fluid",
-          "slug": "layouts-fluid"
-        },
-        {
-          "url": "layouts/blank",
-          "name": "Blank",
-          "slug": "layouts-blank",
-          "target": "_blank"
-        }
-      ]
+      "menuHeader": "Meeting"
     },
     {
-      "name": "Front Pages",
-      "icon": "menu-icon tf-icons bx bx-store",
-      "slug": "front-pages",
-      "badge": [
-        "label-primary fs-tiny",
-        "Pro"
-      ],
-      "submenu": [
-        {
-          "url": "https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo-1/front-pages/landing",
-          "name": "Landing",
-          "slug": "front-pages-landing",
-          "target": "_blank"
-        },
-        {
-          "url": "https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo-1/front-pages/pricing",
-          "name": "Pricing",
-          "slug": "front-pages-pricing",
-          "target": "_blank"
-        },
-        {
-          "url": "https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo-1/front-pages/payment",
-          "name": "Payment",
-          "slug": "front-pages-payment",
-          "target": "_blank"
-        },
-        {
-          "url": "https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo-1/front-pages/checkout",
-          "name": "Checkout",
-          "slug": "front-pages-checkout",
-          "target": "_blank"
-        },
-        {
-          "url": "https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo-1/front-pages/help-center",
-          "name": "Help Center",
-          "slug": "front-pages-help-center",
-          "target": "_blank"
-        }
-      ]
-    },
-    {
-      "name": "Laravel Crud",
-      "icon": "menu-icon tf-icons bx bxl-php",
-      "slug": "laravel-example",
-      "badge": [
-        "label-primary fs-tiny",
-        "Pro"
-      ],
-      "submenu": [
-        {
-          "url": "https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo-1/laravel/user-management",
-          "name": "User Management",
-          "slug": "laravel-example-user-management",
-          "target": "_blank"
-        }
-      ]
+      "name": "Meeting",
+      "icon": "menu-icon tf-icons bx bx-video-plus",
+      "slug": "create-meeting",
+      "url": "cards/basic"
     },
     {
       "menuHeader": "Apps & Pages"
-    },
-    {
-      "url": "https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo-1/app/email",
-      "name": "Email",
-      "icon": "menu-icon tf-icons bx bx-envelope",
-      "slug": "app-email",
-      "target": "_blank",
-      "badge": [
-        "label-primary fs-tiny",
-        "Pro"
-      ]
-    },
-    {
-      "url": "https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo-1/app/chat",
-      "name": "Chat",
-      "icon": "menu-icon tf-icons bx bx-chat",
-      "slug": "app-chat",
-      "target": "_blank",
-      "badge": [
-        "label-primary fs-tiny",
-        "Pro"
-      ]
-    },
-    {
-      "url": "https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo-1/app/calendar",
-      "name": "Calendar",
-      "icon": "menu-icon tf-icons bx bx-calendar",
-      "slug": "app-calendar",
-      "target": "_blank",
-      "badge": [
-        "label-primary fs-tiny",
-        "Pro"
-      ]
-    },
-    {
-      "url": "https://demos.themeselection.com/sneat-bootstrap-html-laravel-admin-template/demo-1/app/kanban",
-      "name": "Kanban",
-      "icon": "menu-icon tf-icons bx bx-grid",
-      "slug": "app-kanban",
-      "target": "_blank",
-      "badge": [
-        "label-primary fs-tiny",
-        "Pro"
-      ]
     },
     {
       "name": "Account Settings",
