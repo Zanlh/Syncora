@@ -54,7 +54,6 @@ Have questions, or want to chat about Syncora?
 
 ### **CSS for Sync Loader Animation:**
 
-```css
 @keyframes syncAnimation {
     0% { transform: rotate(0deg); }
     50% { transform: rotate(180deg); }
