@@ -67,6 +67,7 @@ Route::middleware('auth:agent')->name('agent.')->prefix('agent')->group(function
   //Meeting Routes
   Route::get('/meetings', [MeetingController::class, 'index'])->name('meetings');
   Route::get('/meetings/create', [MeetingController::class, 'create'])->name('meetings.create');
+  Route::post('/meetings/create', [MeetingController::class, 'createMeting'])->name('meetings.create.submit');
 });
 
 
