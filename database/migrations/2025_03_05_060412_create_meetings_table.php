@@ -23,6 +23,12 @@ return new class extends Migration
       $table->time('end_time'); // Separate time column
       $table->string('time_zone');
       $table->string('location');
+      $table->string('meeting_room')->nullable()->default('default_room'); // Make nullable or set a default value
+      $table->string('meeting_link')->nullable(); // Store Jitsi meeting link
+      $table->enum('status', ['scheduled', 'active', 'inactive', 'canceled'])->default('scheduled');  // Meeting status
+      $table->foreignId('moderator_id')->nullable()->constrained('agents')->onDelete('set null'); // Track the moderator (admin)
+      $table->enum('meeting_type', ['scheduled', 'instant'])->default('scheduled');  // Type of meeting (Scheduled or Instant)
+      $table->timestamp('cancelled_at')->nullable();  // To track when the meeting was canceled
       $table->timestamps();
     });
   }

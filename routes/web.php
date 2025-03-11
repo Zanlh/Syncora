@@ -68,8 +68,14 @@ Route::middleware('auth:agent')->name('agent.')->prefix('agent')->group(function
   Route::get('/meetings', [MeetingController::class, 'index'])->name('meetings');
   Route::get('/meetings/create', [MeetingController::class, 'create'])->name('meetings.create');
   Route::post('/meetings/create', [MeetingController::class, 'createMeting'])->name('meetings.create.submit');
-});
 
+  // Meeting Room Route
+  Route::get('/agent/meeting/{room}', function ($room) {
+    $meetingLink = "https://localhost:8443/$room"; // Construct the link here
+
+    return view('agent.meeting.room', compact('room', 'meetingLink'));
+  })->name('meeting.room');
+});
 
 
 

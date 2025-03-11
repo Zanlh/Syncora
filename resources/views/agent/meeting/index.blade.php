@@ -22,7 +22,7 @@
                                     <h6 class="card-title m-0">Scheduled Meetings</h6>
                                 </div>
                                 <div class="card-body text-center">
-                                    <h4 class="card-text">15</h4>
+                                    <h4 class="card-text">{{ $scheduledMeetings->count() }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -35,7 +35,7 @@
                                     <h6 class="card-title m-0">Reschedule Meetings</h6>
                                 </div>
                                 <div class="card-body text-center">
-                                    <h4 class="card-text">5</h4>
+                                    <h4 class="card-text">0</h4>
                                 </div>
                             </div>
                         </div>
@@ -48,7 +48,7 @@
                                     <h6 class="card-title m-0">Canceled Meetings</h6>
                                 </div>
                                 <div class="card-body text-center">
-                                    <h4 class="card-text">2</h4>
+                                    <h4 class="card-text">{{ $canceledMeetings->count() }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -59,27 +59,36 @@
             <!-- Today's Meetings Card -->
             <div class="card mb-3">
                 <div class="card-header">
-                    <h5 class="card-title">Today's Meetings</h5>
+                    <h5 class="card-title">Upcoming Meetings</h5>
                 </div>
                 <div class="card-body">
-                    <!-- Meeting Detail Card 1 -->
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h6 class="card-title">Meeting 1</h6>
-                            <p class="text-muted">10:00 AM - 11:00 AM</p>
-                            <p class="text-muted">Team discussion about new feature development.</p>
+                    @foreach ($upcomingMeetings as $meeting)
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6 class="card-title">{{ $meeting->title }}</h6>
+
+                                <p class="text-muted">
+                                    {{ \Carbon\Carbon::parse($meeting->start_date . ' ' . $meeting->start_time)->format('M d, Y g:i A') }}
+                                    -
+                                    {{ \Carbon\Carbon::parse($meeting->end_date . ' ' . $meeting->end_time)->format('M d, Y g:i A') }}
+                                </p>
+
+                                <p class="text-muted">{{ $meeting->description }}</p>
+
+                                @if ($meeting->meeting_link)
+                                    <a href="{{ $meeting->meeting_link }}" target="_blank" class="btn btn-primary">
+                                        Join Meeting
+                                    </a>
+                                @else
+                                    <button class="btn btn-secondary" disabled>No meeting link available</button>
+                                @endif
+
+                            </div>
                         </div>
-                    </div>
-                    <!-- Meeting Detail Card 2 -->
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h6 class="card-title">Meeting 2</h6>
-                            <p class="text-muted">1:00 PM - 2:00 PM</p>
-                            <p class="text-muted">Client review and feedback session.</p>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
             </div>
+
         </div>
 
         <!-- Second Column: Create a Meeting (With Small Calendar) -->
@@ -94,8 +103,10 @@
 
                     <!-- Create Meeting Button -->
                     <a href="{{ route('agent.meetings.create') }}" class="btn btn-primary me-2">
-                        <i class="bx bx-plus
-                        me-1"></i> Create Meeting
+                        <i class="bx bx-plus me-1"></i> Schedulee Meeting
+                    </a>
+                    <a href="#" class="btn btn-info me-2">
+                        <i class="bx bx-plus me-1"></i> Start Meeting
                     </a>
                 </div>
             </div>

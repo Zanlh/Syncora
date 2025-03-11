@@ -17,7 +17,12 @@ class Meeting extends Model
     'end_time',
     'time_zone',
     'location',
+    'meeting_room',
+    'meeting_link',
+    'status',
+    'meeting_type',
   ];
+
 
   protected $casts = [
     'attendees' => 'array',

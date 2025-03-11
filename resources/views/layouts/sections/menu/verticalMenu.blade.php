@@ -4,11 +4,11 @@
     <div class="app-brand demo">
         <a href="{{ url('/') }}" class="app-brand-link">
             <span class="app-brand-logo demo">
-                <i class="bx bx-sync " style=" font-size: 30px; color: var(--bs-primary);"></i>
+                <i class="bx bx-sync" style="font-size: 30px; color: #004A7C;"></i>
                 <!-- Replace with the desired icon -->
             </span>
             <span class="app-brand-text demo menu-text fw-bold ms-2"
-                style="font-size: 30px; color: var(--bs-primary);">Syncora</span>
+                style="font-size: 30px; color: #004A7C;">Syncora</span>
         </a>
 
 

@@ -20,6 +20,10 @@ trait MeetingValidationTrait
       'attendees.*' => 'required|email', // Validate each attendee email
       'optional_attendees' => 'nullable|array',
       'optional_attendees.*' => 'nullable|email', // Validate optional attendee emails
+      'meeting_room' => 'nullable|string|max:255', // Validate meeting room if needed
+      'status' => 'nullable|in:scheduled,active,inactive,canceled', // If you have status field
+      'meeting_type' => 'nullable|in:scheduled,instant', // If you have meeting type field
+      'moderator_id' => 'nullable|exists:agents,id' // If moderator ID is provided, make sure it's an existing agent
     ]);
   }
 }
