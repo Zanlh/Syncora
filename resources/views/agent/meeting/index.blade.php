@@ -145,6 +145,22 @@
         </div>
     </div>
 
+    <!-- Modal for Date Clicked Details -->
+    <div class="modal fade" id="dateDetailsModal" tabindex="-1" aria-labelledby="dateDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="dateDetailsModalLabel">Meeting Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Dynamic content will be injected here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <!-- End Content -->
 @endsection
 
@@ -164,9 +180,33 @@
                 initialView: 'dayGridMonth', // Initial view on load
                 selectable: true, // Allows selecting a date
                 dateClick: function(info) {
-                    alert('Selected date: ' + info.dateStr); // Simple alert for clicked date
-                },
+                    var selectedDate = info.dateStr;
+                    var meetingDetails = '';
 
+                    // Filter events for the selected date
+                    var eventsOnDate = calendar.getEvents().filter(function(event) {
+                        // Compare only the date part of event's start date with the selected date
+                        return event.start.toLocaleDateString() === new Date(selectedDate)
+                            .toLocaleDateString();
+                    });
+                    console.log(eventsOnDate);
+                    if (eventsOnDate.length > 0) {
+                        eventsOnDate.forEach(function(event) {
+                            meetingDetails += `
+                        <strong>Title:</strong> ${event.title}<br>
+                        <strong>Start Time:</strong> ${event.start.toLocaleString()}<br>
+                        <strong>End Time:</strong> ${event.end ? event.end.toLocaleString() : 'N/A'}<br>
+                        <strong>Description:</strong> ${event.extendedProps.description || 'No description'}<br><br>
+                    `;
+                        });
+                    } else {
+                        meetingDetails = 'No meetings scheduled for this date.';
+                    }
+
+                    // Open the modal and display the meeting details
+                    $('#dateDetailsModal .modal-body').html(meetingDetails);
+                    $('#dateDetailsModal').modal('show'); // Use Bootstrap modal
+                },
                 // Populate events from PHP passed data
                 events: {!! json_encode(
                     $scheduledMeetings->map(function ($meeting) {

@@ -1,14 +1,27 @@
 <?php
 
-namespace App\Traits;
+namespace App\Http\Requests;
 
-use Illuminate\Http\Request;
+use Illuminate\Foundation\Http\FormRequest;
 
-trait MeetingValidationTrait
+class MeetingRequest extends FormRequest
 {
-  public function validateMeeting(Request $request)
+  /**
+   * Determine if the user is authorized to make this request.
+   */
+  public function authorize(): bool
   {
-    return $request->validate([
+    return true;
+  }
+
+  /**
+   * Get the validation rules that apply to the request.
+   *
+   * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+   */
+  public function rules(): array
+  {
+    return [
       'meeting_title' => 'required|string|max:255',
       'start_date' => 'required|date_format:Y-m-d', // Ensures date format
       'start_time' => 'required|date_format:h:i A', // Accepts AM/PM format
@@ -24,6 +37,6 @@ trait MeetingValidationTrait
       'status' => 'nullable|in:scheduled,active,inactive,canceled', // If you have status field
       'meeting_type' => 'nullable|in:scheduled,instant', // If you have meeting type field
       'moderator_id' => 'nullable|exists:agents,id' // If moderator ID is provided, make sure it's an existing agent
-    ]);
+    ];
   }
 }

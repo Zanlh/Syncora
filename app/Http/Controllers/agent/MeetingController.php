@@ -3,16 +3,24 @@
 namespace App\Http\Controllers\agent;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\MeetingRequest;
 use Illuminate\Http\Request;
 use App\Traits\MeetingValidationTrait;
 use App\Traits\MeetingCreatorTrait;
 use App\Traits\MeetingTrait;
+use App\Services\Meeting\MeetingService;
 use Illuminate\Support\Str;
 
 class MeetingController extends Controller
 {
   //
   use MeetingValidationTrait, MeetingCreatorTrait, MeetingTrait;
+  protected $meetingService;
+
+  public function __construct(MeetingService $meetingService)
+  {
+    $this->meetingService = $meetingService;
+  }
   public function index()
   {
     // Get meetings data
@@ -30,12 +38,12 @@ class MeetingController extends Controller
     return view('agent.meeting.create');
   }
 
-  public function createScheduleMeting(Request $request): \Illuminate\Http\RedirectResponse
+  public function createScheduleMeting(MeetingRequest $request): \Illuminate\Http\RedirectResponse
   {
     try {
-      $validated = $this->validateMeeting($request);
+      $validated = $request->validated();
       // Create the meeting using the MeetingCreatorTrait logic
-      $meeting = $this->createMeeting($validated);
+      $meeting = $this->meetingService->createMeeting($validated);
 
       // Check if the meeting is instant
       if ($validated['meeting_type'] === 'instant') {

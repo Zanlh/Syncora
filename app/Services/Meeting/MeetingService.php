@@ -1,28 +1,41 @@
 <?php
 
-namespace App\Traits;
+namespace App\Services\Meeting;
+
+use Illuminate\Support\Str;
 
 use App\Models\Meeting;
 use Illuminate\Support\Facades\Auth;
-use App\Services\MeetingService;
 use Carbon\Carbon;
 
-trait MeetingCreatorTrait
+class MeetingService
 {
-  protected $meetingService;
-
-  // Injecting the MeetingService in the constructor
-  public function __construct(MeetingService $meetingService)
+  /**
+   * Generate a unique Jitsi meeting room name.
+   *
+   * @param string $prefix
+   * @return string
+   */
+  public function generateMeetingRoomName($prefix = 'syncora_')
   {
-    $this->meetingService = $meetingService;
+    return $prefix . Str::random(10); // Generate a random 10-character meeting room name
+  }
+
+  /**
+   * Generate the meeting link based on the room name.
+   *
+   * @param string $meetingRoom
+   * @return string
+   */
+  public function generateMeetingLink($meetingRoom)
+  {
+    return 'https://localhost:8443/' . $meetingRoom; // Replace with your Jitsi server URL
   }
 
   public function createMeeting($validatedData)
   {
-    // Generate a unique meeting room name
-    $meetingRoom = $this->meetingService->generateMeetingRoomName();
-    // Generate the meeting link
-    $meetingLink = $this->meetingService->generateMeetingLink($meetingRoom);
+    $meetingRoom = $this->generateMeetingRoomName();
+    $meetingLink = $this->generateMeetingLink($meetingRoom);
 
     // Combine the start date and time to create a Carbon object
     //$meetingDate = Carbon::createFromFormat('Y-m-d h:i A', $validatedData['start_date'] . ' ' . $validatedData['start_time'], $validatedData['time_zone']);
@@ -36,8 +49,6 @@ trait MeetingCreatorTrait
     $startTime = Carbon::createFromFormat('h:i A', $validatedData['start_time'])->format('H:i:s');
     $endTime = Carbon::createFromFormat('h:i A', $validatedData['end_time'])->format('H:i:s');
 
-
-    // Call the MeetingService to store the meeting and return the result
     $meeting = new Meeting([
       'title' => $validatedData['meeting_title'],
       'agent_id' => Auth::guard('agent')->user()->id, // Use the custom agent guard
