@@ -103,15 +103,48 @@
 
                     <!-- Create Meeting Button -->
                     <a href="{{ route('agent.meetings.create') }}" class="btn btn-primary me-2">
-                        <i class="bx bx-plus me-1"></i> Schedulee Meeting
+                        <i class="bx bx-plus me-1"></i> Schedule Meeting
                     </a>
-                    <a href="#" class="btn btn-info me-2">
+                    <!-- Start Meeting Button -->
+                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#attendeesModal">
                         <i class="bx bx-plus me-1"></i> Start Meeting
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
+    <!-- Modal for Attendees -->
+    <div class="modal fade" id="attendeesModal" tabindex="-1" aria-labelledby="attendeesModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="attendeesModalLabel">Enter Meeting Title and Attendees</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="attendeesForm">
+                        <!-- Input for Meeting Title -->
+                        <div class="mb-3">
+                            <label for="meeting_title" class="form-label">Meeting Title</label>
+                            <input type="text" class="form-control" id="meeting_title" name="meeting_title"
+                                placeholder="Enter the meeting title" required>
+                        </div>
+
+                        <!-- Input for Attendees' Emails -->
+                        <div class="mb-3">
+                            <label for="attendees" class="form-label">Attendees Emails</label>
+                            <input type="text" class="form-control" id="attendees" name="attendees"
+                                placeholder="Enter emails, separated by commas" required>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary">Start Meeting</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- End Content -->
 @endsection
 

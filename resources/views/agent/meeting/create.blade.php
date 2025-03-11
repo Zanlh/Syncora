@@ -138,24 +138,13 @@
                 maximumSelectionLength: 10,
             });
 
-            // Function to round time to nearest 30 minutes
-            function roundToNearestHalfHour(date) {
-                const minutes = date.getMinutes();
-                const roundedMinutes = Math.round(minutes / 30) * 30;
-                date.setMinutes(roundedMinutes);
-                date.setSeconds(0);
-                date.setMilliseconds(0);
-                return date;
-            }
-
             // Toggle between meeting type
             $('#meeting_type').on('change', function() {
                 if ($(this).val() === 'instant') {
-                    // Set current date and time for instant meeting, rounded to nearest 30 minutes
+                    // Set current date and time for instant meeting
                     const now = new Date();
-                    const roundedNow = roundToNearestHalfHour(new Date(now));
-                    const currentDate = roundedNow.toISOString().split('T')[0]; // yyyy-mm-dd
-                    const currentTime = roundedNow.toLocaleTimeString('en-US', {
+                    const currentDate = now.toISOString().split('T')[0]; // yyyy-mm-dd
+                    const currentTime = now.toLocaleTimeString('en-US', {
                         hour: '2-digit',
                         minute: '2-digit',
                         hour12: true
@@ -164,8 +153,7 @@
                     $('input[name="start_date"]').val(currentDate);
                     $('input[name="end_date"]').val(currentDate);
                     $('select[name="start_time"]').val(currentTime);
-                    $('select[name="end_time"]').val(
-                    currentTime); // End time can be the same for now, or set to a later time if needed
+                    $('select[name="end_time"]').val(currentTime);
                     $('#status').val('active'); // Autofill the status as active for instant meetings
                 } else {
                     // Clear the date and time fields for scheduled meetings
