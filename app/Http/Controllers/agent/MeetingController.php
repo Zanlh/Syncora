@@ -30,7 +30,7 @@ class MeetingController extends Controller
     return view('agent.meeting.create');
   }
 
-  public function createMeting(Request $request): \Illuminate\Http\RedirectResponse
+  public function createScheduleMeting(Request $request): \Illuminate\Http\RedirectResponse
   {
     try {
       $validated = $this->validateMeeting($request);
@@ -51,4 +51,6 @@ class MeetingController extends Controller
       return back()->withErrors($e->validator)->withInput();
     }
   }
+
+  public function createInstantMeeting(Request $request): \Illuminate\Http\RedirectResponse {}
 }

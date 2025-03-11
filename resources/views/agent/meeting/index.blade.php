@@ -103,11 +103,11 @@
 
                     <!-- Create Meeting Button -->
                     <a href="{{ route('agent.meetings.create') }}" class="btn btn-primary me-2">
-                        <i class="bx bx-plus me-1"></i> Schedule Meeting
+                        <i class="bx bx-plus me-1"></i> Schedule a Meeting
                     </a>
                     <!-- Start Meeting Button -->
                     <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#attendeesModal">
-                        <i class="bx bx-plus me-1"></i> Start Meeting
+                        <i class="bx bx-plus me-1"></i> Start a Meeting
                     </button>
                 </div>
             </div>
@@ -167,24 +167,19 @@
                     alert('Selected date: ' + info.dateStr); // Simple alert for clicked date
                 },
 
-                // Event handling: adding events dynamically or from server
-                events: [{
-                        title: 'Meeting 1',
-                        start: '2025-03-10T10:00:00',
-                        end: '2025-03-10T12:00:00',
-                        description: 'Important business meeting',
-                        backgroundColor: '#ff7f7f', // Event color
-                        textColor: '#fff', // Text color within the event box
-                    },
-                    {
-                        title: 'Conference',
-                        start: '2025-03-12T09:00:00',
-                        end: '2025-03-12T17:00:00',
-                        backgroundColor: '#4caf50',
-                        textColor: '#fff',
-                    }
-                ],
-
+                // Populate events from PHP passed data
+                events: {!! json_encode(
+                    $scheduledMeetings->map(function ($meeting) {
+                        return [
+                            'title' => $meeting->title,
+                            'start' => $meeting->start_date . 'T' . $meeting->start_time,
+                            'end' => $meeting->end_date . 'T' . $meeting->end_time,
+                            'description' => $meeting->description,
+                            'backgroundColor' => '#4caf50', // Green for scheduled meetings
+                            'textColor' => '#fff',
+                        ];
+                    }),
+                ) !!},
                 // Design and customization options
                 headerToolbar: {
                     left: 'prev,next today',
