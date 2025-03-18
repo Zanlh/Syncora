@@ -5,28 +5,27 @@ namespace App\Http\Controllers\agent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MeetingRequest;
 use Illuminate\Http\Request;
-use App\Traits\MeetingValidationTrait;
-use App\Traits\MeetingCreatorTrait;
-use App\Traits\MeetingTrait;
 use App\Services\Meeting\MeetingService;
-use Illuminate\Support\Str;
+use App\Services\Meeting\MeetingQueryService;
+use App\Traits\MeetingHelperTrait;
 
 class MeetingController extends Controller
 {
-  //
-  use MeetingValidationTrait, MeetingCreatorTrait, MeetingTrait;
+  use MeetingHelperTrait;
   protected $meetingService;
+  protected $meetingQueryService;
 
-  public function __construct(MeetingService $meetingService)
+  public function __construct(MeetingService $meetingService, MeetingQueryService $meetingQueryService)
   {
     $this->meetingService = $meetingService;
+    $this->meetingQueryService = $meetingQueryService;
   }
   public function index()
   {
     // Get meetings data
-    $scheduledMeetings = $this->getMeetingByStatus('scheduled');
-    $canceledMeetings = $this->getMeetingByStatus('canceled');
-    $upcomingMeetings = $this->getUpcomingMeetings();
+    $scheduledMeetings = $this->meetingQueryService->getMeetingsByStatus('scheduled');
+    $canceledMeetings = $this->meetingQueryService->getMeetingsByStatus('canceled');
+    $upcomingMeetings = $this->meetingQueryService->getUpcomingMeetings();
 
     // Pass data to the view
     return view('agent.meeting.index', compact('scheduledMeetings', 'canceledMeetings', 'upcomingMeetings'));
@@ -38,27 +37,29 @@ class MeetingController extends Controller
     return view('agent.meeting.create');
   }
 
-  public function createScheduleMeting(MeetingRequest $request): \Illuminate\Http\RedirectResponse
+  public function createScheduleMeeting(MeetingRequest $request): \Illuminate\Http\RedirectResponse
   {
     try {
       $validated = $request->validated();
-      // Create the meeting using the MeetingCreatorTrait logic
       $meeting = $this->meetingService->createMeeting($validated);
 
-      // Check if the meeting is instant
-      if ($validated['meeting_type'] === 'instant') {
-        // Redirect directly to the meeting room
-        return redirect()->route('agent.meeting.room', [
-          'room' => $meeting->meeting_room, // Meeting room name
-        ]);
-      }
-
-      // If it's a scheduled meeting, redirect back to the index (or another desired view)
-      return redirect()->route('agent.meetings');
+      return $this->redirectToMeetingRoom($validated, $meeting);
     } catch (\Illuminate\Validation\ValidationException $e) {
-      return back()->withErrors($e->validator)->withInput();
+
+      return back()->with('error', $e->getMessage())->withInput();
     }
   }
+  public function createInstantMeeting(Request $request): \Illuminate\Http\RedirectResponse
+  {
+    $validated = $request->validate([
+      'meeting_title' => 'required|string|max:255',
+      'attendees' => 'required|array|min:1',
+      'attendees.*' => 'required|email',
+      'meeting_type' => 'nullable|in:scheduled,instant', // If you have meeting type field
+    ]);
 
-  public function createInstantMeeting(Request $request): \Illuminate\Http\RedirectResponse {}
+    $meeting = $this->meetingService->createInstantMeeting($validated);
+
+    return $this->redirectToMeetingRoom($validated, $meeting);
+  }
 }

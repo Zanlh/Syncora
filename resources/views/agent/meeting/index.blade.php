@@ -113,37 +113,7 @@
             </div>
         </div>
     </div>
-    <!-- Modal for Attendees -->
-    <div class="modal fade" id="attendeesModal" tabindex="-1" aria-labelledby="attendeesModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="attendeesModalLabel">Enter Meeting Title and Attendees</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="attendeesForm">
-                        <!-- Input for Meeting Title -->
-                        <div class="mb-3">
-                            <label for="meeting_title" class="form-label">Meeting Title</label>
-                            <input type="text" class="form-control" id="meeting_title" name="meeting_title"
-                                placeholder="Enter the meeting title" required>
-                        </div>
-
-                        <!-- Input for Attendees' Emails -->
-                        <div class="mb-3">
-                            <label for="attendees" class="form-label">Attendees Emails</label>
-                            <input type="text" class="form-control" id="attendees" name="attendees"
-                                placeholder="Enter emails, separated by commas" required>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <button type="submit" class="btn btn-primary">Start Meeting</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+    {{-- @include('agent.meeting.instant-meeting-card') --}}
 
     <!-- Modal for Date Clicked Details -->
     <div class="modal fade" id="dateDetailsModal" tabindex="-1" aria-labelledby="dateDetailsModalLabel" aria-hidden="true">
@@ -160,8 +130,47 @@
         </div>
     </div>
 
+    <!-- Modal for Instant Meeting -->
+    <div class="modal fade" id="attendeesModal" tabindex="-1" aria-labelledby="attendeesModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="attendeesModalLabel">Enter Meeting Title and Attendees</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="attendeesForm" action="{{ route('agent.instant.meetings.create') }}" method="POST">
+                        @csrf
+                        <!-- Input for Meeting Title -->
+                        <div class="mb-3">
+                            <label for="meeting_title" class="form-label">Meeting Title</label>
+                            <input type="text" class="form-control" id="meeting_title" name="meeting_title"
+                                placeholder="Enter the meeting title" required>
+                        </div>
 
-    <!-- End Content -->
+                        <!-- Input for Attendees' Emails -->
+                        <div class="mb-3">
+                            <label for="attendees" class="form-label">
+                                <i class="bx bx-envelope"></i> Attendees (Emails)
+                            </label>
+                            <select id="attendees" name="attendees[]" class="form-control rounded-3" multiple="multiple"
+                                required>
+                                @foreach (old('attendees', []) as $email)
+                                    <option value="{{ $email }}" selected>{{ $email }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <input type="hidden" class="form-control" id="meeting_type" name="meeting_type"
+                            value="instant">
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary">Start Meeting</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 @endsection
 
 @push('script-page')
@@ -170,6 +179,8 @@
 
     <!-- FullCalendar JS -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+
+
 
     <!-- Your custom script -->
     <script>
@@ -238,6 +249,17 @@
                 eventTextColor: '#ffffff', // Color of text within events
             });
             calendar.render();
+
+            $.noConflict(); // Prevent conflicts with other libraries
+            // Initialize the attendees input field (Select2)
+            $('#attendees').select2({
+                placeholder: 'Enter email addresses',
+                tags: true,
+                tokenSeparators: [',', ' '],
+                maximumSelectionLength: 10,
+                width: '100%'
+            });
+
         });
     </script>
 @endpush

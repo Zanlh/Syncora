@@ -12,7 +12,8 @@
 
     {{-- <div id="jitsi-container" style="height: 600px;"></div> --}}
 
-    <script src="https://localhost:8443/external_api.js"></script> <!-- Use self-hosted Jitsi -->
+    <script src="https://meet.jit.si/external_api.js"></script>
+
     <script>
         const domain = "localhost:8443";
         const options = {
@@ -28,5 +29,27 @@
             }
         };
         const api = new JitsiMeetExternalAPI(domain, options);
+
+        // Add conference terminated event listener
+        api.addEventListener("conferenceTerminated", function(event) {
+            console.log("Meeting Ended:", event);
+            setTimeout(function() {
+                window.close();
+                window.location.href = "{{ route('agent.meetings') }}";
+            }, 1000); // 1-second delay
+        });
+
+        // Add conference failed event listener
+        api.addEventListener("conferenceFailed", function(event) {
+            console.log("Conference Failed:", event);
+            if (event?.error === "conference.destroyed") {
+                console.log("Meeting was terminated by the host.");
+                window.location.href = "{{ route('agent.meetings') }}"; // Redirect when the meeting is destroyed
+            } else {
+                console.log("Other conference failure:", event);
+            }
+        });
+        // Additional logging for API initialization
+        console.log("Jitsi API initialized:", api);
     </script>
 @endsection

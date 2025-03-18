@@ -64,14 +64,15 @@ Route::middleware('auth:agent')->name('agent.')->prefix('agent')->group(function
   // Main Page Route
   Route::get('/', [Analytics::class, 'index'])->name('dashboard');
 
-  //Meeting Routes
+  //Meeting Route
   Route::get('/meetings', [MeetingController::class, 'index'])->name('meetings');
   Route::get('/meetings/create', [MeetingController::class, 'create'])->name('meetings.create');
-  Route::post('/meetings/create', [MeetingController::class, 'createScheduleMeting'])->name('meetings.create.submit');
+  Route::post('/meetings/create', [MeetingController::class, 'createScheduleMeeting'])->name('meetings.create.submit');
+  Route::post('/instant-meeting/create', [MeetingController::class, 'createInstantMeeting'])->name('instant.meetings.create');
 
   // Meeting Room Route
   Route::get('/agent/meeting/{room}', function ($room) {
-    $meetingLink = "https://localhost:8443/$room"; // Construct the link here
+    $meetingLink = "https://syncora.duckdns.org/$room"; // Construct the link here
 
     return view('agent.meeting.room', compact('room', 'meetingLink'));
   })->name('meeting.room');
