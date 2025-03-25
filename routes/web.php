@@ -71,7 +71,7 @@ Route::middleware('auth:agent')->name('agent.')->prefix('agent')->group(function
   Route::post('/instant-meeting/create', [MeetingController::class, 'createInstantMeeting'])->name('instant.meetings.create');
 
   // Meeting Room Route
-  Route::get('/agent/meeting/{room}', function ($room) {
+  Route::get('/meeting/{room}', function ($room) {
     $meetingLink = "https://syncora.duckdns.org/$room"; // Construct the link here
 
     return view('agent.meeting.room', compact('room', 'meetingLink'));

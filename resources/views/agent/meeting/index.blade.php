@@ -76,55 +76,55 @@
                                 <p class="text-muted">{{ $meeting->description }}</p>
 
                                 @if ($meeting->meeting_link)
-                                    <a href="{{ $meeting->meeting_link }}" target="_blank" class="btn btn-primary">
+                                    <!-- Use route helper to generate the meeting room link dynamically -->
+                                    <a href="{{ route('agent.meeting.room', ['room' => $meeting->meeting_room]) }}"
+                                        target="_blank" class="btn btn-primary">
                                         Join Meeting
                                     </a>
                                 @else
                                     <button class="btn btn-secondary" disabled>No meeting link available</button>
                                 @endif
-
                             </div>
                         </div>
                     @endforeach
                 </div>
             </div>
-
         </div>
 
-        <!-- Second Column: Create a Meeting (With Small Calendar) -->
+        <!-- Second Column: Create a Meeting (With Date Picker and Upcoming Meetings) -->
         <div class="col-lg-6 col-md-12">
             <div class="card">
                 <div class="card-header">
                     <h5 class="card-title">Create a Meeting</h5>
                 </div>
                 <div class="card-body">
-                    <!-- Small Calendar Display -->
-                    <div id="calendar" class="mb-3"></div>
+                    <!-- Current Time Display -->
+                    <div class="mb-3 text-center">
+                        <div id="currentTime" class="display-1 mb-2" style="font-weight: bold;"></div>
+                        <div id="currentDay" class="h5 text-muted"></div>
+                    </div>
+
+                    <!-- Upcoming Meetings Section -->
+                    <h6>Upcoming Meetings</h6>
+                    <ul class="list-group mb-3">
+                        @foreach ($upcomingMeetings as $meeting)
+                            <li class="list-group-item">
+                                <strong>{{ $meeting->title }}</strong>
+                                <br>
+                                <small>{{ \Carbon\Carbon::parse($meeting->start_date . ' ' . $meeting->start_time)->format('M d, Y g:i A') }}</small>
+                            </li>
+                        @endforeach
+                    </ul>
 
                     <!-- Create Meeting Button -->
                     <a href="{{ route('agent.meetings.create') }}" class="btn btn-primary me-2">
                         <i class="bx bx-plus me-1"></i> Schedule a Meeting
                     </a>
+
                     <!-- Start Meeting Button -->
                     <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#attendeesModal">
                         <i class="bx bx-plus me-1"></i> Start a Meeting
                     </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    {{-- @include('agent.meeting.instant-meeting-card') --}}
-
-    <!-- Modal for Date Clicked Details -->
-    <div class="modal fade" id="dateDetailsModal" tabindex="-1" aria-labelledby="dateDetailsModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="dateDetailsModalLabel">Meeting Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Dynamic content will be injected here -->
                 </div>
             </div>
         </div>
@@ -160,8 +160,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <input type="hidden" class="form-control" id="meeting_type" name="meeting_type"
-                            value="instant">
+                        <input type="hidden" class="form-control" id="meeting_type" name="meeting_type" value="instant">
                         <!-- Submit Button -->
                         <button type="submit" class="btn btn-primary">Start Meeting</button>
                     </form>
@@ -170,87 +169,36 @@
         </div>
     </div>
 
-
 @endsection
 
 @push('script-page')
-    <!-- FullCalendar CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
-
-    <!-- FullCalendar JS -->
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
-
-
-
-    <!-- Your custom script -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
+        $(document).ready(function() {
+            // Prevent conflicts with other libraries
+            $.noConflict();
 
-                initialView: 'dayGridMonth', // Initial view on load
-                selectable: true, // Allows selecting a date
-                dateClick: function(info) {
-                    var selectedDate = info.dateStr;
-                    var meetingDetails = '';
+            // Display the current time dynamically
+            function updateCurrentTime() {
+                const now = new Date();
+                const currentTime = now.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                const currentDay = now.toLocaleDateString([], {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
 
-                    // Filter events for the selected date
-                    var eventsOnDate = calendar.getEvents().filter(function(event) {
-                        // Compare only the date part of event's start date with the selected date
-                        return event.start.toLocaleDateString() === new Date(selectedDate)
-                            .toLocaleDateString();
-                    });
-                    console.log(eventsOnDate);
-                    if (eventsOnDate.length > 0) {
-                        eventsOnDate.forEach(function(event) {
-                            meetingDetails += `
-                        <strong>Title:</strong> ${event.title}<br>
-                        <strong>Start Time:</strong> ${event.start.toLocaleString()}<br>
-                        <strong>End Time:</strong> ${event.end ? event.end.toLocaleString() : 'N/A'}<br>
-                        <strong>Description:</strong> ${event.extendedProps.description || 'No description'}<br><br>
-                    `;
-                        });
-                    } else {
-                        meetingDetails = 'No meetings scheduled for this date.';
-                    }
+                // Update the displayed time and day
+                document.getElementById('currentTime').textContent = currentTime;
+                document.getElementById('currentDay').textContent = currentDay;
+            }
 
-                    // Open the modal and display the meeting details
-                    $('#dateDetailsModal .modal-body').html(meetingDetails);
-                    $('#dateDetailsModal').modal('show'); // Use Bootstrap modal
-                },
-                // Populate events from PHP passed data
-                events: {!! json_encode(
-                    $scheduledMeetings->map(function ($meeting) {
-                        return [
-                            'title' => $meeting->title,
-                            'start' => $meeting->start_date . 'T' . $meeting->start_time,
-                            'end' => $meeting->end_date . 'T' . $meeting->end_time,
-                            'description' => $meeting->description,
-                            'backgroundColor' => '#4caf50', // Green for scheduled meetings
-                            'textColor' => '#fff',
-                        ];
-                    }),
-                ) !!},
-                // Design and customization options
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                },
-                buttonText: {
-                    today: 'Today',
-                    month: 'Month',
-                    week: 'Week',
-                    day: 'Day',
-                },
+            setInterval(updateCurrentTime, 1000); // Update every second
+            updateCurrentTime(); // Initial call to display time immediately
 
-                // Customization of events' appearance
-                eventColor: '#378006', // Color of events
-                eventTextColor: '#ffffff', // Color of text within events
-            });
-            calendar.render();
-
-            $.noConflict(); // Prevent conflicts with other libraries
             // Initialize the attendees input field (Select2)
             $('#attendees').select2({
                 placeholder: 'Enter email addresses',
@@ -259,7 +207,6 @@
                 maximumSelectionLength: 10,
                 width: '100%'
             });
-
         });
     </script>
 @endpush

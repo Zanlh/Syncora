@@ -9,9 +9,14 @@ class MeetingUtilityService
   /**
    * Generate a unique Jitsi meeting room name.
    */
-  public function generateMeetingRoomName($prefix = 'syncora_')
+  public function generateMeetingRoomName($prefix = '')
   {
-    return $prefix . Str::random(10);
+    $words = explode("\n", file_get_contents('https://raw.githubusercontent.com/dwyl/english-words/master/words.txt'));
+
+    // Pick two random words
+    $randomPair = ucfirst(trim($words[array_rand($words)])) . ucfirst(trim($words[array_rand($words)]));
+
+    return $prefix . $randomPair;
   }
 
   /**

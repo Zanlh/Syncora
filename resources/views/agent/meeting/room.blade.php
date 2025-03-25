@@ -5,19 +5,18 @@
 @section('content')
     <h1 class="mb-4">Meeting Room: {{ $room }}</h1>
 
-    <!-- Join Meeting Button -->
-    <a href="{{ $meetingLink }}" target="_blank" class="btn btn-primary">
-        Join Meeting
-    </a>
+    <div id="jitsi-container" style="height: 600px;"></div>
 
-    {{-- <div id="jitsi-container" style="height: 600px;"></div> --}}
-
-    <script src="https://meet.jit.si/external_api.js"></script>
+    <script src="https://syncora.duckdns.org/external_api.js"></script>
 
     <script>
-        const domain = "localhost:8443";
+        const domain = "syncora.duckdns.org";
+        const urlParams = new URLSearchParams(window.location.search);
+        const jwtToken = urlParams.get('token'); // Get the JWT token from the URL
+        const roomName = "{{ $room }}";
         const options = {
-            roomName: "{{ $room }}",
+            roomName: roomName,
+            jwt: jwtToken,
             width: "100%",
             height: 600,
             parentNode: document.getElementById("jitsi-container"),
@@ -26,30 +25,14 @@
             },
             configOverwrite: {
                 prejoinPageEnabled: true,
+                hosts: {
+                    domain: "syncora.duckdns.org",
+                    guest: "guest.syncora.duckdns.org"
+                }
             }
         };
+
         const api = new JitsiMeetExternalAPI(domain, options);
-
-        // Add conference terminated event listener
-        api.addEventListener("conferenceTerminated", function(event) {
-            console.log("Meeting Ended:", event);
-            setTimeout(function() {
-                window.close();
-                window.location.href = "{{ route('agent.meetings') }}";
-            }, 1000); // 1-second delay
-        });
-
-        // Add conference failed event listener
-        api.addEventListener("conferenceFailed", function(event) {
-            console.log("Conference Failed:", event);
-            if (event?.error === "conference.destroyed") {
-                console.log("Meeting was terminated by the host.");
-                window.location.href = "{{ route('agent.meetings') }}"; // Redirect when the meeting is destroyed
-            } else {
-                console.log("Other conference failure:", event);
-            }
-        });
-        // Additional logging for API initialization
         console.log("Jitsi API initialized:", api);
     </script>
 @endsection
