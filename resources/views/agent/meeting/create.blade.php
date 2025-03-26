@@ -17,6 +17,8 @@
 
         <form action="{{ route('agent.meetings.create.submit') }}" method="POST">
             @csrf
+            <input type="hidden" name="meeting_type" value="scheduled">
+
             <div class="mb-3">
                 <label for="meeting_title" class="form-label">
                     <i class="bx bx-calendar"></i> Meeting Title
@@ -26,31 +28,11 @@
             </div>
 
             <div class="mb-3">
-                <label for="meeting_type" class="form-label">Meeting Type</label>
-                <select id="meeting_type" name="meeting_type" class="form-control rounded-3" required>
-                    <option value="scheduled" {{ old('meeting_type') == 'scheduled' ? 'selected' : '' }}>Scheduled</option>
-                    <option value="instant" {{ old('meeting_type') == 'instant' ? 'selected' : '' }}>Instant</option>
-                </select>
-            </div>
-
-            <div class="mb-3">
                 <label for="attendees" class="form-label">
                     <i class="bx bx-envelope"></i> Attendees (Emails)
                 </label>
                 <select id="attendees" name="attendees[]" class="form-control rounded-3" multiple="multiple" required>
                     @foreach (old('attendees', []) as $email)
-                        <option value="{{ $email }}" selected>{{ $email }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label for="optional_attendees" class="form-label">
-                    <i class="bx bx-envelope-open"></i> Optional Attendees (Emails)
-                </label>
-                <select id="optional_attendees" name="optional_attendees[]" class="form-control rounded-3"
-                    multiple="multiple">
-                    @foreach (old('optional_attendees', []) as $email)
                         <option value="{{ $email }}" selected>{{ $email }}</option>
                     @endforeach
                 </select>
@@ -127,40 +109,17 @@
 @endsection
 
 @push('script-page')
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+
     <script>
         $(document).ready(function() {
             $.noConflict();
 
-            $('#attendees, #optional_attendees').select2({
+            $('#attendees').select2({
                 placeholder: 'Enter email addresses',
                 tags: true,
                 tokenSeparators: [',', ' '],
                 maximumSelectionLength: 10,
-            });
-
-            // Toggle between meeting type
-            $('#meeting_type').on('change', function() {
-                if ($(this).val() === 'instant') {
-                    // Set current date and time for instant meeting
-                    const now = new Date();
-                    const currentDate = now.toISOString().split('T')[0]; // yyyy-mm-dd
-                    const currentTime = now.toLocaleTimeString('en-US', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: true
-                    });
-
-                    $('input[name="start_date"]').val(currentDate);
-                    $('input[name="end_date"]').val(currentDate);
-                    $('select[name="start_time"]').val(currentTime);
-                    $('select[name="end_time"]').val(currentTime);
-                    $('#status').val('active'); // Autofill the status as active for instant meetings
-                } else {
-                    // Clear the date and time fields for scheduled meetings
-                    $('input[name="start_date"], input[name="end_date"]').val('');
-                    $('select[name="start_time"], select[name="end_time"]').val('');
-                    $('#status').val(''); // Optional: handle status for scheduled meetings
-                }
             });
 
             // Auto select timezone
@@ -172,6 +131,25 @@
             }).fail(function() {
                 console.error("Could not retrieve timezone.");
             });
+
+            // Pre-fill the date and time fields with current values
+            function getNearestTime() {
+                let now = moment(); // Current time
+                let startTime = now.startOf('minute').add(30 - (now.minute() % 30),
+                    'minutes'); // Nearest 30 minutes
+                let endTime = moment(startTime).add(1, 'hour'); // End time 1 hour later
+
+                // Set the start and end time values
+                $('select[name="start_time"]').val(startTime.format('hh:mm A')).trigger('change');
+                $('select[name="end_time"]').val(endTime.format('hh:mm A')).trigger('change');
+
+                // Set the start and end date as today
+                $('input[name="start_date"]').val(now.format('YYYY-MM-DD'));
+                $('input[name="end_date"]').val(now.format('YYYY-MM-DD'));
+            }
+
+            // Call the function to set the date and time when the page loads
+            getNearestTime();
         });
     </script>
 @endpush

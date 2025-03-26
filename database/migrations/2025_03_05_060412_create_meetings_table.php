@@ -16,7 +16,6 @@ return new class extends Migration
       $table->string('title');
       $table->foreignId('agent_id')->constrained('agents')->onDelete('cascade');
       $table->json('attendees');  // List of attendees' emails (JSON array)
-      $table->json('optional_attendees');  // Optional attendees (JSON array)
       $table->date('start_date'); // Separate date column
       $table->time('start_time'); // Separate time column
       $table->date('end_date'); // Separate date column
@@ -25,6 +24,7 @@ return new class extends Migration
       $table->string('location');
       $table->string('meeting_room')->nullable()->default('default_room'); // Make nullable or set a default value
       $table->string('meeting_link')->nullable(); // Store Jitsi meeting link
+      $table->text('token')->nullable(); // Store Jitsi JWT token
       $table->enum('status', ['scheduled', 'active', 'inactive', 'canceled'])->default('scheduled');  // Meeting status
       $table->foreignId('moderator_id')->nullable()->constrained('agents')->onDelete('set null'); // Track the moderator (admin)
       $table->enum('meeting_type', ['scheduled', 'instant'])->default('scheduled');  // Type of meeting (Scheduled or Instant)

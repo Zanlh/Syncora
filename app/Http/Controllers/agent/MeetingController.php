@@ -25,10 +25,9 @@ class MeetingController extends Controller
     // Get meetings data
     $scheduledMeetings = $this->meetingQueryService->getMeetingsByStatus('scheduled');
     $canceledMeetings = $this->meetingQueryService->getMeetingsByStatus('canceled');
-    $upcomingMeetings = $this->meetingQueryService->getUpcomingMeetings();
 
     // Pass data to the view
-    return view('agent.meeting.index', compact('scheduledMeetings', 'canceledMeetings', 'upcomingMeetings'));
+    return view('agent.meeting.index', compact('scheduledMeetings', 'canceledMeetings',));
   }
 
 

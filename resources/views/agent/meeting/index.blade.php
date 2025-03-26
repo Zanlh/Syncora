@@ -56,66 +56,12 @@
                 </div>
             </div>
 
-            <!-- Today's Meetings Card -->
+            <!-- Meeting Creation Card -->
             <div class="card mb-3">
                 <div class="card-header">
-                    <h5 class="card-title">Upcoming Meetings</h5>
+                    <h5 class="card-title">Meeting Creation</h5>
                 </div>
                 <div class="card-body">
-                    @foreach ($upcomingMeetings as $meeting)
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <h6 class="card-title">{{ $meeting->title }}</h6>
-
-                                <p class="text-muted">
-                                    {{ \Carbon\Carbon::parse($meeting->start_date . ' ' . $meeting->start_time)->format('M d, Y g:i A') }}
-                                    -
-                                    {{ \Carbon\Carbon::parse($meeting->end_date . ' ' . $meeting->end_time)->format('M d, Y g:i A') }}
-                                </p>
-
-                                <p class="text-muted">{{ $meeting->description }}</p>
-
-                                @if ($meeting->meeting_link)
-                                    <!-- Use route helper to generate the meeting room link dynamically -->
-                                    <a href="{{ route('agent.meeting.room', ['room' => $meeting->meeting_room]) }}"
-                                        target="_blank" class="btn btn-primary">
-                                        Join Meeting
-                                    </a>
-                                @else
-                                    <button class="btn btn-secondary" disabled>No meeting link available</button>
-                                @endif
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </div>
-
-        <!-- Second Column: Create a Meeting (With Date Picker and Upcoming Meetings) -->
-        <div class="col-lg-6 col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title">Create a Meeting</h5>
-                </div>
-                <div class="card-body">
-                    <!-- Current Time Display -->
-                    <div class="mb-3 text-center">
-                        <div id="currentTime" class="display-1 mb-2" style="font-weight: bold;"></div>
-                        <div id="currentDay" class="h5 text-muted"></div>
-                    </div>
-
-                    <!-- Upcoming Meetings Section -->
-                    <h6>Upcoming Meetings</h6>
-                    <ul class="list-group mb-3">
-                        @foreach ($upcomingMeetings as $meeting)
-                            <li class="list-group-item">
-                                <strong>{{ $meeting->title }}</strong>
-                                <br>
-                                <small>{{ \Carbon\Carbon::parse($meeting->start_date . ' ' . $meeting->start_time)->format('M d, Y g:i A') }}</small>
-                            </li>
-                        @endforeach
-                    </ul>
-
                     <!-- Create Meeting Button -->
                     <a href="{{ route('agent.meetings.create') }}" class="btn btn-primary me-2">
                         <i class="bx bx-plus me-1"></i> Schedule a Meeting
@@ -125,6 +71,98 @@
                     <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#attendeesModal">
                         <i class="bx bx-plus me-1"></i> Start a Meeting
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Second Column: Create a Meeting (With Date Picker and Upcoming Meetings) -->
+        <div class="col-lg-6 col-md-12">
+            <div class="card">
+                <!-- Fixed Card Header with Gradient -->
+                <div class="card-header"
+                    style="background: linear-gradient(135deg, #6f42c1, #ff6f61); text-align: center; padding: 2rem 1.5rem; border-radius: 0.75rem;">
+                    <div id="currentTime"
+                        style="font-family: 'Roboto', sans-serif; font-size: 4rem; font-weight: bold; text-shadow: 2px 2px rgba(0, 0, 0, 0.2); margin-bottom: 0.5rem;">
+                    </div>
+                    <div id="currentDay" style="font-size: 1.25rem; font-weight: 400; color: rgba(255, 255, 255, 0.7);">
+                    </div>
+                </div>
+
+                <!-- Scrollable Card Body with Styled Content -->
+                <div class="card-body" style="height: calc(100vh - 250px); overflow-y: auto; padding: 1.5rem;">
+                    <!-- Upcoming Meetings Section -->
+                    <h4 class="card-title mb-3 mt-3" style="font-size: 1.5rem; font-weight: bold; color: #333;">
+                        Today's Meetings
+                    </h4>
+
+                    <!-- List of Meetings -->
+                    <div class="list-group">
+                        @foreach ($scheduledMeetings as $meeting)
+                            <div class="card mb-3 shadow-sm"
+                                style="border-radius: 10px; border: 1px solid #f1f1f1; position: relative;">
+                                <div class="card-body" style="padding: 1.25rem; position: relative;">
+                                    <!-- Three-dot Dropdown -->
+                                    <div class="dropdown" style="position: absolute; top: 10px; right: 15px;">
+                                        <button class="btn btn-light btn-sm" type="button" data-bs-toggle="dropdown"
+                                            aria-expanded="false" style="border: none; background: transparent;">
+                                            <i class="bx bx-dots-vertical-rounded"></i> <!-- Boxicons Three-dot icon -->
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li>
+                                                <a class="dropdown-item text-warning" href="#">
+                                                    <i class="bx bx-calendar-edit me-2"></i> Reschedule
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <form action="#" method="POST"
+                                                    onsubmit="return confirm('Are you sure you want to cancel this meeting?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="dropdown-item text-danger" type="submit">
+                                                        <i class="bx bx-x-circle me-2"></i> Cancel
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- Meeting Title -->
+                                    <h4 class="card-title" style="font-size: 1.25rem; font-weight: 600; color: #333;">
+                                        {{ $meeting->title }}
+                                    </h4>
+
+                                    <!-- Meeting Date and Time -->
+                                    <p class="text-muted" style="font-size: 1rem;">
+                                        {{ \Carbon\Carbon::parse($meeting->start_date)->format('M d, Y') }}
+                                        <span style="font-size: 0.875rem; display: inline-block; margin-left: 5px;">
+                                            {{ \Carbon\Carbon::parse($meeting->start_time)->format('g:i A') }} -
+                                            {{ \Carbon\Carbon::parse($meeting->end_time)->format('g:i A') }}
+                                        </span>
+                                    </p>
+
+                                    <!-- Meeting Description -->
+                                    <p class="text-muted" style="font-size: 0.95rem; line-height: 1.5; color: #555;">
+                                        {{ $meeting->description }}
+                                    </p>
+
+                                    <!-- Action Buttons -->
+                                    <div class="mt-3">
+                                        @if ($meeting->meeting_link)
+                                            <a href="{{ route('agent.meeting.room', ['room' => $meeting->meeting_room, 'token' => $meeting->token]) }}"
+                                                target="_blank" class="btn btn-primary btn-sm">
+                                                Join Meeting
+                                            </a>
+                                        @else
+                                            <button class="btn btn-secondary btn-sm" disabled>No meeting link
+                                                available</button>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -160,7 +198,8 @@
                                 @endforeach
                             </select>
                         </div>
-                        <input type="hidden" class="form-control" id="meeting_type" name="meeting_type" value="instant">
+                        <input type="hidden" class="form-control" id="meeting_type" name="meeting_type"
+                            value="instant">
                         <!-- Submit Button -->
                         <button type="submit" class="btn btn-primary">Start Meeting</button>
                     </form>
@@ -168,6 +207,8 @@
             </div>
         </div>
     </div>
+    </div>
+    <!-- End Content -->
 
 @endsection
 

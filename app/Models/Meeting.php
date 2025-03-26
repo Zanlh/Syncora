@@ -10,7 +10,6 @@ class Meeting extends Model
     'title',
     'agent_id',
     'attendees',
-    'optional_attendees',
     'start_date',
     'start_time',
     'end_date',
@@ -19,6 +18,7 @@ class Meeting extends Model
     'location',
     'meeting_room',
     'meeting_link',
+    'token',
     'status',
     'meeting_type',
   ];
@@ -26,7 +26,6 @@ class Meeting extends Model
 
   protected $casts = [
     'attendees' => 'array',
-    'optional_attendees' => 'array',
   ];
 
   public function agent()

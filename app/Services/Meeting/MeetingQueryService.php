@@ -12,7 +12,10 @@ class MeetingQueryService
    */
   public function getMeetingsByStatus($status)
   {
-    return Meeting::where('status', $status)->get();
+    $today = Carbon::today(); // Get today's date
+    return Meeting::where('status', $status)
+      ->whereDate('start_date', $today) // Filter meetings with today's date
+      ->get();
   }
 
   /**
