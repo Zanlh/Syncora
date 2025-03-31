@@ -69,25 +69,34 @@ class MeetingService
     // Set the meeting status to 'active' for instant meetings
     $meetingStatus = 'active';
 
-    // Set the current time as the start date/time for instant meetings
-    $meetingDate = Carbon::now($timeZone);
-    $startTime = $meetingDate->format('H:i:s');
-    $endTime = $meetingDate->addMinutes(30)->format('H:i:s'); // Set a 30-minute duration for the instant meeting
+    // Get current datetime with timezone
+    $meetingDateTime = Carbon::now($timeZone);
+    $startDateTime = $meetingDateTime; // Start time is now
+    $endDateTime = $meetingDateTime->copy()->addHours(2); // End time is 2 hours from now
 
-    // Create the meeting with the provided title and attendees, and auto-fill the rest
+    // Generate JWT Token
+    $jwtToken = $this->utilityService->generateJitsiToken(
+      Auth::guard('agent')->user(),
+      $meetingRoom,
+      $startDateTime->timestamp,
+      $endDateTime->timestamp
+    );
+
+    // Create the meeting with the provided title and auto-fill the rest
     $meeting = new Meeting([
       'title' => $validatedData['meeting_title'],
       'agent_id' => Auth::guard('agent')->user()->id, // Use the custom agent guard
-      'attendees' => json_encode($validatedData['attendees']),
+      'attendees' => json_encode($validatedData['attendees'] ?? []),
       'optional_attendees' => json_encode($validatedData['optional_attendees'] ?? []),
-      'start_date' => $meetingDate->format('Y-m-d'),
-      'start_time' => $startTime,
-      'end_date' => $meetingDate->format('Y-m-d'),
-      'end_time' => $endTime,
+      'start_date' => $startDateTime->format('Y-m-d'),
+      'start_time' => $startDateTime->format('H:i:s'),
+      'end_date' => $endDateTime->format('Y-m-d'),
+      'end_time' => $endDateTime->format('H:i:s'),
       'time_zone' => $timeZone,
       'location' => $validatedData['location'] ?? 'Virtual', // Default to 'Virtual'
       'meeting_room' => $meetingRoom,
       'meeting_link' => $meetingLink, // Store the meeting link
+      'token' => $jwtToken, // Store the JWT token
       'status' => $meetingStatus,
       'meeting_type' => $validatedData['meeting_type'] ?? 'instant',
     ]);

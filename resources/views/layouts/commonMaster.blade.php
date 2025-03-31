@@ -69,6 +69,8 @@
     <script src="https://meet.jit.si/external_api.js"></script>
 
 
+
+
     <script>
         // SweetAlert2 Toast for success
         @if (session('success'))

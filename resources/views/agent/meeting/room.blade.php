@@ -3,8 +3,6 @@
 @section('title', 'Join Meeting')
 
 @section('content')
-    <h1 class="mb-4">Meeting Room: {{ $room }}</h1>
-
     <div id="jitsi-container" style="height: 600px;"></div>
 
     <script src="https://syncora.duckdns.org/external_api.js"></script>
@@ -21,7 +19,7 @@
             height: 600,
             parentNode: document.getElementById("jitsi-container"),
             userInfo: {
-                displayName: "{{ auth()->user()->name ?? 'Guest' }}"
+                displayName: "{{ auth('agent')->user()->name ?? 'Guest' }}"
             },
             configOverwrite: {
                 prejoinPageEnabled: true,
@@ -34,5 +32,9 @@
 
         const api = new JitsiMeetExternalAPI(domain, options);
         console.log("Jitsi API initialized:", api);
+        // Redirect to index page when the meeting ends
+        api.addEventListener('videoConferenceLeft', function() {
+            window.location.href = "{{ route('agent.meetings') }}"; // Redirect to the named route
+        });
     </script>
 @endsection

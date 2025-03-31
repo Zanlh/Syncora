@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Services\Meeting\MeetingService;
 use App\Services\Meeting\MeetingQueryService;
 use App\Traits\MeetingHelperTrait;
+use Carbon\Carbon;
 
 class MeetingController extends Controller
 {
@@ -20,11 +21,12 @@ class MeetingController extends Controller
     $this->meetingService = $meetingService;
     $this->meetingQueryService = $meetingQueryService;
   }
-  public function index()
+  public function index(Request $request)
   {
     // Get meetings data
     $scheduledMeetings = $this->meetingQueryService->getMeetingsByStatus('scheduled');
     $canceledMeetings = $this->meetingQueryService->getMeetingsByStatus('canceled');
+
 
     // Pass data to the view
     return view('agent.meeting.index', compact('scheduledMeetings', 'canceledMeetings',));
@@ -52,8 +54,6 @@ class MeetingController extends Controller
   {
     $validated = $request->validate([
       'meeting_title' => 'required|string|max:255',
-      'attendees' => 'required|array|min:1',
-      'attendees.*' => 'required|email',
       'meeting_type' => 'nullable|in:scheduled,instant', // If you have meeting type field
     ]);
 

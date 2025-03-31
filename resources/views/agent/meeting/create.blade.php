@@ -123,13 +123,13 @@
             });
 
             // Auto select timezone
-            $.get("http://ip-api.com/json/", function(response) {
+            $.get("https://ipinfo.io/json", function(response) {
                 let detectedTimezone = response.timezone;
                 if ($("#time_zone option[value='" + detectedTimezone + "']").length > 0) {
                     $("#time_zone").val(detectedTimezone).trigger('change');
                 }
             }).fail(function() {
-                console.error("Could not retrieve timezone.");
+                console.error("Failed to retrieve timezone.");
             });
 
             // Pre-fill the date and time fields with current values

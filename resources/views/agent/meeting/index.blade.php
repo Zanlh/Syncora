@@ -59,17 +59,18 @@
             <!-- Meeting Creation Card -->
             <div class="card mb-3">
                 <div class="card-header">
-                    <h5 class="card-title">Meeting Creation</h5>
+                    <h5 class="card-title">Meeting Actions</h5>
                 </div>
                 <div class="card-body">
                     <!-- Create Meeting Button -->
                     <a href="{{ route('agent.meetings.create') }}" class="btn btn-primary me-2">
-                        <i class="bx bx-plus me-1"></i> Schedule a Meeting
+                        <i class="bx bxs-calendar"></i> Schedule a Meeting
                     </a>
 
                     <!-- Start Meeting Button -->
-                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#attendeesModal">
-                        <i class="bx bx-plus me-1"></i> Start a Meeting
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#instantMeetingModal">
+                        <i class="bx bxs-video me-1"></i> Start a Meeting
                     </button>
                 </div>
             </div>
@@ -80,23 +81,44 @@
             <div class="card">
                 <!-- Fixed Card Header with Gradient -->
                 <div class="card-header"
-                    style="background: linear-gradient(135deg, #6f42c1, #ff6f61); text-align: center; padding: 2rem 1.5rem; border-radius: 0.75rem;">
+                    style="background: linear-gradient(135deg, #696CFF, #FF6F61);
+                       text-align: center;
+                       padding: 2rem 1.5rem;
+                       border-radius: 0.75rem;">
                     <div id="currentTime"
-                        style="font-family: 'Roboto', sans-serif; font-size: 4rem; font-weight: bold; text-shadow: 2px 2px rgba(0, 0, 0, 0.2); margin-bottom: 0.5rem;">
+                        style="font-family: 'Roboto', sans-serif;
+                           font-size: 4rem;
+                           font-weight: bold;
+                           text-shadow: 2px 2px rgba(0, 0, 0, 0.2);
+                           margin-bottom: 0.5rem;
+                           color: white;">
+                        <!-- Ensure time is visible on gradient -->
                     </div>
-                    <div id="currentDay" style="font-size: 1.25rem; font-weight: 400; color: rgba(255, 255, 255, 0.7);">
+                    <div id="currentDay"
+                        style="font-size: 1.25rem;
+                           font-weight: 400;
+                           color: rgba(255, 255, 255, 0.7);">
                     </div>
                 </div>
 
                 <!-- Scrollable Card Body with Styled Content -->
-                <div class="card-body" style="height: calc(100vh - 250px); overflow-y: auto; padding: 1.5rem;">
-                    <!-- Upcoming Meetings Section -->
-                    <h4 class="card-title mb-3 mt-3" style="font-size: 1.5rem; font-weight: bold; color: #333;">
-                        Today's Meetings
-                    </h4>
+                <div class="card-body" style="padding: 1.5rem;">
+                    <!-- Fixed Header: Today's Meetings and Calendar Button -->
+                    <div class="d-flex justify-content-between align-items-center mb-3 mt-3"
+                        style="position: sticky; top: 0; background-color: white; z-index: 10;">
+                        <h4 class="card-title" style="font-size: 1.5rem; font-weight: bold; color: #333;">
+                            Today's Meetings
+                        </h4>
 
-                    <!-- List of Meetings -->
-                    <div class="list-group">
+                        <!-- Calendar Button -->
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#calendarModal">
+                            <i class="bx bxs-calendar"></i> Calendar
+                        </button>
+                    </div>
+
+                    <!-- List of Meetings (Scrollable Section) -->
+                    <div class="list-group" style="max-height: 400px; overflow-y: auto;">
                         @foreach ($scheduledMeetings as $meeting)
                             <div class="card mb-3 shadow-sm"
                                 style="border-radius: 10px; border: 1px solid #f1f1f1; position: relative;">
@@ -138,6 +160,13 @@
                                             {{ \Carbon\Carbon::parse($meeting->start_time)->format('g:i A') }} -
                                             {{ \Carbon\Carbon::parse($meeting->end_time)->format('g:i A') }}
                                         </span>
+                                        <!-- Time Zone Display -->
+                                        <span style="font-size: 0.875rem; margin-left: 10px;">
+                                            Time Zone: {{ $meeting->time_zone }}
+                                        </span>
+
+                                        <!-- Time Zone Difference -->
+                                        <span style="font-size: 0.875rem; margin-left: 10px;" id="timezone-diff"></span>
                                     </p>
 
                                     <!-- Meeting Description -->
@@ -160,8 +189,6 @@
                                 </div>
                             </div>
                         @endforeach
-
-
                     </div>
                 </div>
             </div>
@@ -169,85 +196,79 @@
     </div>
 
     <!-- Modal for Instant Meeting -->
-    <div class="modal fade" id="attendeesModal" tabindex="-1" aria-labelledby="attendeesModalLabel" aria-hidden="true">
+    <div class="modal fade" id="instantMeetingModal" tabindex="-1" aria-labelledby="instantMeetingModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="attendeesModalLabel">Enter Meeting Title and Attendees</h5>
+                    <h5 class="modal-title" id="instantMeetingModalLabel">Enter Meeting Title and Attendees</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="attendeesForm" action="{{ route('agent.instant.meetings.create') }}" method="POST">
                         @csrf
-                        <!-- Input for Meeting Title -->
                         <div class="mb-3">
-                            <label for="meeting_title" class="form-label">Meeting Title</label>
-                            <input type="text" class="form-control" id="meeting_title" name="meeting_title"
-                                placeholder="Enter the meeting title" required>
+                            <label for="meetingTitle" class="form-label">Meeting Title</label>
+                            <input type="text" class="form-control" id="meeting_title" name="meeting_title" required>
                         </div>
-
-                        <!-- Input for Attendees' Emails -->
-                        <div class="mb-3">
-                            <label for="attendees" class="form-label">
-                                <i class="bx bx-envelope"></i> Attendees (Emails)
-                            </label>
-                            <select id="attendees" name="attendees[]" class="form-control rounded-3" multiple="multiple"
-                                required>
-                                @foreach (old('attendees', []) as $email)
-                                    <option value="{{ $email }}" selected>{{ $email }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                        {{-- <div class="mb-3">
+                            <label for="attendees" class="form-label">Attendees</label>
+                            <input type="email" class="form-control" id="attendees" name="attendees"
+                                placeholder="Add attendees" multiple required>
+                        </div> --}}
                         <input type="hidden" class="form-control" id="meeting_type" name="meeting_type"
                             value="instant">
-                        <!-- Submit Button -->
-                        <button type="submit" class="btn btn-primary">Start Meeting</button>
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bx bx-play-circle me-1"></i> Start Meeting
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    </div>
-    <!-- End Content -->
-
 @endsection
+
 
 @push('script-page')
     <script>
         $(document).ready(function() {
-            // Prevent conflicts with other libraries
-            $.noConflict();
-
-            // Display the current time dynamically
-            function updateCurrentTime() {
+            // Function to update the current time and time zone difference
+            function updateCurrentTimeAndTimezoneDiff() {
                 const now = new Date();
                 const currentTime = now.toLocaleTimeString([], {
                     hour: '2-digit',
-                    minute: '2-digit'
+                    minute: '2-digit',
                 });
                 const currentDay = now.toLocaleDateString([], {
                     weekday: 'long',
                     month: 'long',
                     day: 'numeric',
-                    year: 'numeric'
+                    year: 'numeric',
                 });
 
-                // Update the displayed time and day
+                // Get current timezone offset (in minutes) from UTC
+                const currentTimezoneOffset = now.getTimezoneOffset(); // In minutes
+
+                // Convert offset to hours and minutes
+                const hoursOffset = Math.floor(Math.abs(currentTimezoneOffset) / 60);
+                const minutesOffset = Math.abs(currentTimezoneOffset) % 60;
+                const sign = currentTimezoneOffset < 0 ? '+' : '-';
+
+                // Format the time zone difference
+                const currentTimezoneString =
+                    `UTC${sign}${hoursOffset}:${minutesOffset.toString().padStart(2, '0')}`;
+
+                // Update the displayed time, day, and timezone
                 document.getElementById('currentTime').textContent = currentTime;
                 document.getElementById('currentDay').textContent = currentDay;
+                document.getElementById('timezone-diff').textContent = `(${currentTimezoneString})`;
             }
 
-            setInterval(updateCurrentTime, 1000); // Update every second
-            updateCurrentTime(); // Initial call to display time immediately
+            setInterval(updateCurrentTimeAndTimezoneDiff, 1000); // Update every second
+            updateCurrentTimeAndTimezoneDiff(); // Initial call to display time and timezone immediately
 
-            // Initialize the attendees input field (Select2)
-            $('#attendees').select2({
-                placeholder: 'Enter email addresses',
-                tags: true,
-                tokenSeparators: [',', ' '],
-                maximumSelectionLength: 10,
-                width: '100%'
-            });
         });
     </script>
 @endpush

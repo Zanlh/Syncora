@@ -3,19 +3,14 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Services\MeetingService;
+use App\Services\Meeting\MeetingService;
 
 class AppServiceProvider extends ServiceProvider
 {
   /**
    * Register any application services.
    */
-  public function register(): void
-  {
-    $this->app->singleton(MeetingService::class, function ($app) {
-      return new MeetingService();
-    });
-  }
+  public function register(): void {}
 
   /**
    * Bootstrap any application services.

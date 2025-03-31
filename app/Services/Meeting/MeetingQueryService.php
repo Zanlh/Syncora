@@ -4,6 +4,7 @@ namespace App\Services\Meeting;
 
 use App\Models\Meeting;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class MeetingQueryService
 {
@@ -12,8 +13,9 @@ class MeetingQueryService
    */
   public function getMeetingsByStatus($status)
   {
-    $today = Carbon::today(); // Get today's date
+    $today = Carbon::today(date_default_timezone_get());
     return Meeting::where('status', $status)
+      ->where('agent_id', Auth::id())
       ->whereDate('start_date', $today) // Filter meetings with today's date
       ->get();
   }

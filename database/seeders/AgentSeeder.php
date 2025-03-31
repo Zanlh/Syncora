@@ -15,8 +15,29 @@ class AgentSeeder extends Seeder
   {
     DB::table('agents')->insert([
       'name' => 'Agent One',
-      'email' => 'agent@example.com',
-      'password' => bcrypt('MangoSlice'), // Encrypting the password
+      'email' => 'agent1@example.com',
+      'password' => bcrypt('syncoraagent'), // Encrypting the password
+      'created_at' => now(),
+      'updated_at' => now(),
+    ]);
+    DB::table('agents')->insert([
+      'name' => 'Agent Two',
+      'email' => 'agent2@example.com',
+      'password' => bcrypt('syncoraagent'), // Encrypting the password
+      'created_at' => now(),
+      'updated_at' => now(),
+    ]);
+    DB::table('agents')->insert([
+      'name' => 'Agent Three',
+      'email' => 'agen3t@example.com',
+      'password' => bcrypt('syncoraagent'), // Encrypting the password
+      'created_at' => now(),
+      'updated_at' => now(),
+    ]);
+    DB::table('agents')->insert([
+      'name' => 'Agent Four',
+      'email' => 'agent4@example.com',
+      'password' => bcrypt('syncoraagent'), // Encrypting the password
       'created_at' => now(),
       'updated_at' => now(),
     ]);
