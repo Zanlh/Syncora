@@ -72,7 +72,7 @@ class MeetingService
     // Get current datetime with timezone
     $meetingDateTime = Carbon::now($timeZone);
     $startDateTime = $meetingDateTime; // Start time is now
-    $endDateTime = $meetingDateTime->copy()->addHours(2); // End time is 2 hours from now
+    $endDateTime = $meetingDateTime->copy()->addHours(1); // End time is 1 hours from now
 
     // Generate JWT Token
     $jwtToken = $this->utilityService->generateJitsiToken(

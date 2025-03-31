@@ -119,76 +119,84 @@
 
                     <!-- List of Meetings (Scrollable Section) -->
                     <div class="list-group" style="max-height: 400px; overflow-y: auto;">
-                        @foreach ($scheduledMeetings as $meeting)
-                            <div class="card mb-3 shadow-sm"
-                                style="border-radius: 10px; border: 1px solid #f1f1f1; position: relative;">
-                                <div class="card-body" style="padding: 1.25rem; position: relative;">
-                                    <!-- Three-dot Dropdown -->
-                                    <div class="dropdown" style="position: absolute; top: 10px; right: 15px;">
-                                        <button class="btn btn-light btn-sm" type="button" data-bs-toggle="dropdown"
-                                            aria-expanded="false" style="border: none; background: transparent;">
-                                            <i class="bx bx-dots-vertical-rounded"></i> <!-- Boxicons Three-dot icon -->
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end">
-                                            <li>
-                                                <a class="dropdown-item text-warning" href="#">
-                                                    <i class="bx bx-calendar-edit me-2"></i> Reschedule
+                        @if ($scheduledMeetings->isEmpty())
+                            <div class="text-center mt-4">
+                                <i class="bx bx-calendar-x text-primary" style="font-size: 3rem;"></i>
+                                <p class="text-muted mt-2" style="font-size: 1.2rem;">No scheduled meetings found.</p>
+                            </div>
+                        @else
+                            @foreach ($scheduledMeetings as $meeting)
+                                <div class="card mb-3 shadow-sm"
+                                    style="border-radius: 10px; border: 1px solid #f1f1f1; position: relative;">
+                                    <div class="card-body" style="padding: 1.25rem; position: relative;">
+                                        <!-- Three-dot Dropdown -->
+                                        <div class="dropdown" style="position: absolute; top: 10px; right: 15px;">
+                                            <button class="btn btn-light btn-sm" type="button" data-bs-toggle="dropdown"
+                                                aria-expanded="false" style="border: none; background: transparent;">
+                                                <i class="bx bx-dots-vertical-rounded"></i> <!-- Boxicons Three-dot icon -->
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li>
+                                                    <a class="dropdown-item text-warning" href="#">
+                                                        <i class="bx bx-calendar-edit me-2"></i> Reschedule
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <form action="#" method="POST"
+                                                        onsubmit="return confirm('Are you sure you want to cancel this meeting?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button class="dropdown-item text-danger" type="submit">
+                                                            <i class="bx bx-x-circle me-2"></i> Cancel
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
+
+                                        <!-- Meeting Title -->
+                                        <h4 class="card-title" style="font-size: 1.25rem; font-weight: 600; color: #333;">
+                                            {{ $meeting->title }}
+                                        </h4>
+
+                                        <!-- Meeting Date and Time -->
+                                        <p class="text-muted" style="font-size: 1rem;">
+                                            {{ \Carbon\Carbon::parse($meeting->start_date)->format('M d, Y') }}
+                                            <span style="font-size: 0.875rem; display: inline-block; margin-left: 5px;">
+                                                {{ \Carbon\Carbon::parse($meeting->start_time)->format('g:i A') }} -
+                                                {{ \Carbon\Carbon::parse($meeting->end_time)->format('g:i A') }}
+                                            </span>
+                                            <!-- Time Zone Display -->
+                                            <span style="font-size: 0.875rem; margin-left: 10px;">
+                                                Time Zone: {{ $meeting->time_zone }}
+                                            </span>
+
+                                            <!-- Time Zone Difference -->
+                                            <span style="font-size: 0.875rem; margin-left: 10px;" id="timezone-diff"></span>
+                                        </p>
+
+                                        <!-- Meeting Description -->
+                                        <p class="text-muted" style="font-size: 0.95rem; line-height: 1.5; color: #555;">
+                                            {{ $meeting->description }}
+                                        </p>
+
+                                        <!-- Action Buttons -->
+                                        <div class="mt-3">
+                                            @if ($meeting->meeting_link)
+                                                <a href="{{ route('agent.meeting.room', ['room' => $meeting->meeting_room, 'token' => $meeting->token]) }}"
+                                                    class="btn btn-primary btn-sm">
+                                                    Join Meeting
                                                 </a>
-                                            </li>
-                                            <li>
-                                                <form action="#" method="POST"
-                                                    onsubmit="return confirm('Are you sure you want to cancel this meeting?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button class="dropdown-item text-danger" type="submit">
-                                                        <i class="bx bx-x-circle me-2"></i> Cancel
-                                                    </button>
-                                                </form>
-                                            </li>
-                                        </ul>
-                                    </div>
-
-                                    <!-- Meeting Title -->
-                                    <h4 class="card-title" style="font-size: 1.25rem; font-weight: 600; color: #333;">
-                                        {{ $meeting->title }}
-                                    </h4>
-
-                                    <!-- Meeting Date and Time -->
-                                    <p class="text-muted" style="font-size: 1rem;">
-                                        {{ \Carbon\Carbon::parse($meeting->start_date)->format('M d, Y') }}
-                                        <span style="font-size: 0.875rem; display: inline-block; margin-left: 5px;">
-                                            {{ \Carbon\Carbon::parse($meeting->start_time)->format('g:i A') }} -
-                                            {{ \Carbon\Carbon::parse($meeting->end_time)->format('g:i A') }}
-                                        </span>
-                                        <!-- Time Zone Display -->
-                                        <span style="font-size: 0.875rem; margin-left: 10px;">
-                                            Time Zone: {{ $meeting->time_zone }}
-                                        </span>
-
-                                        <!-- Time Zone Difference -->
-                                        <span style="font-size: 0.875rem; margin-left: 10px;" id="timezone-diff"></span>
-                                    </p>
-
-                                    <!-- Meeting Description -->
-                                    <p class="text-muted" style="font-size: 0.95rem; line-height: 1.5; color: #555;">
-                                        {{ $meeting->description }}
-                                    </p>
-
-                                    <!-- Action Buttons -->
-                                    <div class="mt-3">
-                                        @if ($meeting->meeting_link)
-                                            <a href="{{ route('agent.meeting.room', ['room' => $meeting->meeting_room, 'token' => $meeting->token]) }}"
-                                                target="_blank" class="btn btn-primary btn-sm">
-                                                Join Meeting
-                                            </a>
-                                        @else
-                                            <button class="btn btn-secondary btn-sm" disabled>No meeting link
-                                                available</button>
-                                        @endif
+                                            @else
+                                                <button class="btn btn-secondary btn-sm" disabled>No meeting link
+                                                    available</button>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+
+                        @endif
                     </div>
                 </div>
             </div>
