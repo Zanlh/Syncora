@@ -68,8 +68,7 @@
 
     <script src="https://meet.jit.si/external_api.js"></script>
 
-
-
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.6.1/build/global/luxon.min.js"></script>
 
     <script>
         // SweetAlert2 Toast for success
@@ -77,15 +76,13 @@
             Swal.fire({
                 icon: 'success',
                 title: 'Success!',
-                text: "{!! session('success') !!}",
+                text: " {!! session('success') !!}",
                 toast: true,
                 position: 'bottom-end',
                 showConfirmButton: false,
                 timer: 3000
             });
-        @endif
-
-        // SweetAlert2 Toast for error
+        @endif // SweetAlert2 Toast for error
         @if (session('error'))
             Swal.fire({
                 icon: 'error',
@@ -96,11 +93,10 @@
                 showConfirmButton: false,
                 timer: 3000
             });
-        @endif
-
+        @endif // SweetAlert2 Toast for warning
         $.ajaxSetup({
             headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                'X-CSRF-TOKEN': $('meta[name="csrf-token" ]').attr('content')
             }
         });
     </script>

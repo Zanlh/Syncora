@@ -1,0 +1,25 @@
+{
+  "name": "ipp/syncora",
+  "description": "Syncora is a streamlined video conferencing platform that simplifies scheduling, organizing, and conducting virtual meetings. With real-time synchronization, Syncora ensures smooth, efficient communication for both instant and scheduled sessions. Perfect for teams and individuals looking to connect effortlessly.",
+  "type": "package",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Ipp\\Syncora\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Ipp\\Syncora\\SyncoraServiceProvider"
+      ]
+    }
+  },
+  "authors": [
+    {
+      "name": "Zan Lwine Htoo"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {}
+}

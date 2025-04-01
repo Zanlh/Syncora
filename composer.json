@@ -11,7 +11,8 @@
     "php": "^8.2",
     "firebase/php-jwt": "^6.11",
     "laravel/framework": "^11.0",
-    "laravel/tinker": "^2.9"
+    "laravel/tinker": "^2.9",
+    "ipp/syncora": "dev-main"
   },
   "require-dev": {
     "fakerphp/faker": "^1.23",
@@ -54,6 +55,15 @@
       "@php artisan migrate --graceful --ansi"
     ]
   },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "packages/ipp/syncora",
+      "options": {
+        "symlink": true
+      }
+    }
+  ],
   "extra": {
     "laravel": {
       "dont-discover": []

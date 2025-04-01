@@ -31,20 +31,21 @@ class MeetingService
     $endTime = Carbon::createFromFormat('h:i A', $validatedData['end_time'])->format('H:i:s');
 
     // Combine start date and time
-    $startDateTime = Carbon::createFromFormat('Y-m-d H:i:s', "$startDate $startTime", $validatedData['time_zone'])->timestamp;
+    $startDateTime = Carbon::createFromFormat('Y-m-d H:i:s', "$startDate $startTime", $validatedData['time_zone']);
+
     // Combine end date and time
-    $endDateTime = Carbon::createFromFormat('Y-m-d H:i:s', "$endDate $endTime", $validatedData['time_zone'])->timestamp;
+    $endDateTime = Carbon::createFromFormat('Y-m-d H:i:s', "$endDate $endTime", $validatedData['time_zone']);
 
 
-    $jwtToken = $this->utilityService->generateJitsiToken(Auth::guard('agent')->user(), $meetingRoom, $startDateTime, $endDateTime);
+    $jwtToken = $this->utilityService->generateJitsiToken(Auth::guard('agent')->user(), $meetingRoom, $startDateTime->timestamp, $endDateTime->timestamp);
     $meeting = new Meeting([
       'title' => $validatedData['meeting_title'],
       'agent_id' => Auth::guard('agent')->user()->id, // Use the custom agent guard
       'attendees' => json_encode($validatedData['attendees']),
-      'start_date' => $startDate,
-      'start_time' => $startTime,
-      'end_date' => $endDate,
-      'end_time' => $endTime,
+      'start_date' => $startDateTime->format('Y-m-d'),  // Store only the date part
+      'start_time' => $startDateTime->format('H:i:s'),  // Store only the time part
+      'end_date' => $endDateTime->format('Y-m-d'),      // Store only the date part
+      'end_time' => $endDateTime->format('H:i:s'),      // Store only the time part
       'time_zone' => $validatedData['time_zone'],
       'location' => $validatedData['location'],
       'meeting_room' => $meetingRoom,

@@ -48,7 +48,9 @@
                                     <h6 class="card-title m-0">Canceled Meetings</h6>
                                 </div>
                                 <div class="card-body text-center">
-                                    <h4 class="card-text">{{ $canceledMeetings->count() }}</h4>
+                                    <h4 class="card-text">
+                                        {{ $canceledMeetings && $canceledMeetings->count() > 0 ? $canceledMeetings->count() : 0 }}
+                                    </h4>
                                 </div>
                             </div>
                         </div>
@@ -166,13 +168,20 @@
                                                 {{ \Carbon\Carbon::parse($meeting->start_time)->format('g:i A') }} -
                                                 {{ \Carbon\Carbon::parse($meeting->end_time)->format('g:i A') }}
                                             </span>
+                                            <br>
                                             <!-- Time Zone Display -->
-                                            <span style="font-size: 0.875rem; margin-left: 10px;">
-                                                Time Zone: {{ $meeting->time_zone }}
+                                            <span class="timezone-diff" data-timezone="{{ $meeting->time_zone }}"
+                                                data-datetime="{{ \Carbon\Carbon::parse($meeting->start_date . ' ' . $meeting->start_time)->toIso8601String() }}"></span>
+                                            <span style="font-size: 0.875rem;">
+                                                Time Zone: {{ $meeting->time_zone }} (
+                                                {{ $meeting->time_diff }})
+                                            </span>
+                                            <br>
+                                            <span style="font-size: 0.875rem;">
+                                                Meeting is in {{ $meeting->local_time_display }} local time
                                             </span>
 
-                                            <!-- Time Zone Difference -->
-                                            <span style="font-size: 0.875rem; margin-left: 10px;" id="timezone-diff"></span>
+
                                         </p>
 
                                         <!-- Meeting Description -->
@@ -241,42 +250,20 @@
 
 @push('script-page')
     <script>
-        $(document).ready(function() {
-            // Function to update the current time and time zone difference
-            function updateCurrentTimeAndTimezoneDiff() {
-                const now = new Date();
-                const currentTime = now.toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                });
-                const currentDay = now.toLocaleDateString([], {
-                    weekday: 'long',
-                    month: 'long',
-                    day: 'numeric',
-                    year: 'numeric',
-                });
+        const {
+            DateTime
+        } = luxon;
 
-                // Get current timezone offset (in minutes) from UTC
-                const currentTimezoneOffset = now.getTimezoneOffset(); // In minutes
+        // Function to show current time in user's time zone
+        function updateTime() {
+            const now = DateTime.local();
+            document.getElementById("currentTime").textContent = now.toFormat('hh:mm a');
+            document.getElementById("currentDay").textContent = now.toFormat('cccc, MMMM dd, yyyy');
+        }
 
-                // Convert offset to hours and minutes
-                const hoursOffset = Math.floor(Math.abs(currentTimezoneOffset) / 60);
-                const minutesOffset = Math.abs(currentTimezoneOffset) % 60;
-                const sign = currentTimezoneOffset < 0 ? '+' : '-';
 
-                // Format the time zone difference
-                const currentTimezoneString =
-                    `UTC${sign}${hoursOffset}:${minutesOffset.toString().padStart(2, '0')}`;
-
-                // Update the displayed time, day, and timezone
-                document.getElementById('currentTime').textContent = currentTime;
-                document.getElementById('currentDay').textContent = currentDay;
-                document.getElementById('timezone-diff').textContent = `(${currentTimezoneString})`;
-            }
-
-            setInterval(updateCurrentTimeAndTimezoneDiff, 1000); // Update every second
-            updateCurrentTimeAndTimezoneDiff(); // Initial call to display time and timezone immediately
-
-        });
+        setInterval(() => {
+            updateTime();
+        }, 1000);
     </script>
 @endpush
