@@ -139,6 +139,11 @@
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-end">
                                                 <li>
+                                                    <a class="dropdown-item text-primary" href="#">
+                                                        <i class="bx bx-link me-2"></i> Copy Invite Link
+                                                    </a>
+                                                </li>
+                                                <li>
                                                     <a class="dropdown-item text-warning" href="#">
                                                         <i class="bx bx-calendar-edit me-2"></i> Reschedule
                                                     </a>

@@ -20,7 +20,6 @@ class MeetingQueryService
     // Get the meetings with the given status
     $meetings = Meeting::where('status', $status)
       ->where('agent_id', Auth::id())
-      ->whereDate('start_date', $today)
       ->get();
 
     // Get the user's current time
@@ -31,7 +30,12 @@ class MeetingQueryService
       $this->setMeetingLocalTimeAndOffset($meeting, $userCurrentTime);
     }
 
-    return $meetings;
+    // Sort meetings by nearest local time
+    $sortedMeetings = $meetings->sortBy(function ($meeting) {
+      return Carbon::parse($meeting->local_time_display); // Sorting by converted local time
+    });
+
+    return $sortedMeetings->values(); // Ensure re-indexed results
   }
 
   // Method to calculate and set meeting local time and time offset
@@ -79,24 +83,6 @@ class MeetingQueryService
 
     // Format the difference as a string (e.g., "+03:30" or "-02:00")
     return ($offsetDifferenceInSeconds >= 0 ? '+' : '-') . sprintf("%02d:%02d", $hours, $minutes);
-  }
-
-  /**
-   * Get meetings within a date range.
-   */
-  public function getMeetingsByDateRange($startDate, $endDate)
-  {
-    return Meeting::whereBetween('start_date', [$startDate, $endDate])
-      ->orWhereBetween('end_date', [$startDate, $endDate])
-      ->get();
-  }
-
-  /**
-   * Get meetings for a specific moderator.
-   */
-  public function getMeetingsByModerator($moderatorId)
-  {
-    return Meeting::where('moderator_id', $moderatorId)->get();
   }
 
   /**
